@@ -11,3 +11,20 @@ type DeepReadonly<T> = T extends Function
 // Recursive Case - Object Types: The second part, T extends object ? { readonly [P in keyof T]: DeepReadonly<T[P]>; }, handles the case where T is an object. If T is an object, it creates a new object with the same keys as T, but each property is recursively transformed using DeepReadonly. This ensures that the transformation is applied deeply to all nested properties.
 
 // Fallback Case - Non-Object, Non-Function Types: The last part, : T, is a fallback case. If T is neither a function nor an object, it means it's a primitive type or some other non-object type. In such cases, we leave it unchanged.
+
+declare const a: Chainable
+
+const result1 = a
+  .option("foo", 123)
+  .option("bar", { value: "Hello World" })
+  .option("name", "type-challenges")
+  .get()
+type Chainable<T = {}> = {
+  option: <K extends PropertyKey, V>(
+    key: K extends keyof T ? never : K,
+    value: V
+  ) => Chainable<Omit<T, K> & Record<K, V>>
+  get: () => T
+}
+
+console.log(result1)
